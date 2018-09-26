@@ -52,6 +52,8 @@ install:
         cd ..;
         ./bin/nim c koch;
         ./koch boot -d:release;
+        ./koch doc0;
+        ./koch csource -d:release;
         rm -rf csources;
       )"
   - export PATH="${NIMDIR}/bin:${PATH}"
@@ -61,13 +63,8 @@ script:
 
 before_deploy:
   - cd "${NIMDIR}"
-  - nim c koch
-  - ./koch boot -d:release
-  #- ./koch testinstall
-  - ./koch doc0
-  - ./koch csource -d:release
+  # Create the release archive.
   - ./koch xz -d:release
-
 deploy:
   provider: releases
   api_key: "${GITHUB_OAUTH_TOKEN}"
