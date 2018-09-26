@@ -1,5 +1,7 @@
 sudo: false
+
 language: c
+
 os:
   - linux
   - osx
@@ -8,6 +10,16 @@ dist: trusty
 matrix:
   allow_failures:
     - os: linux
+
+cache:
+  directories:
+    - nim
+
+env:
+  global:
+    - NIMREPO="https://github.com/nim-lang/Nim"
+    - NIMVER="$(git ls-remote ${NIMREPO} devel | cut -f 1)"
+    - NIMDIR="${TRAVIS_BUILD_DIR}/nim/${NIMVER}"
 
 addons:
   apt:
@@ -22,35 +34,42 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install boehmgc; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install sfml; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install gnu-tar; fi
-
-before_script:
   - set -e
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then unset -f cd; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then shell_session_update() { :; }; fi
-  - git clone --depth 1 https://github.com/nim-lang/csources.git
-  - cd csources
-  - sh build.sh
-  - cd ..
-  - git clone --depth 1 https://github.com/nim-lang/nim.git
-  - cp csources/bin/nim nim/bin/nim
 
-script:
-  - cd nim
-  - export PATH=$(pwd)/bin${PATH:+:$PATH}
+install:
+  - echo "NIMDIR = ${NIMDIR}"
+  # After building nim, wipe csources to save on cache space.
+  - "{ [ -f ${NIMDIR}/bin/nim ]; } ||
+      ( rm -rf nim;
+        mkdir -p nim;
+        git clone --single-branch --branch devel --depth=1 ${NIMREPO} ${NIMDIR};
+        cd ${NIMDIR};
+        [ -d csources ] || git clone --depth 1 https://github.com/nim-lang/csources.git;
+        cd csources;
+        sh build.sh;
+        cd ..;
+        ./bin/nim c koch;
+        ./koch boot -d:release;
+        rm -rf csources;
+      )"
+  - export PATH="${NIMDIR}/bin:${PATH}"
+
+before_deploy:
+  - cd "${NIMDIR}"
   - nim c koch
   - ./koch boot -d:release
   #- ./koch testinstall
   - ./koch doc0
   - ./koch csource -d:release
   - ./koch xz -d:release
-  - cd ..
 
 deploy:
   provider: releases
-  api_key: "$GITHUB_OAUTH_TOKEN"
-  file: "nim/build/nim-*.tar.xz"
+  api_key: "${GITHUB_OAUTH_TOKEN}"
+  file: "nim/${NIMVER}/build/nim-*.tar.xz"
   file_glob: true
-
   skip_cleanup: true
   on:
     tags: false
