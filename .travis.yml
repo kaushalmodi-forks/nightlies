@@ -56,6 +56,9 @@ install:
       )"
   - export PATH="${NIMDIR}/bin:${PATH}"
 
+script:
+  - nim --version
+
 before_deploy:
   - cd "${NIMDIR}"
   - nim c koch
