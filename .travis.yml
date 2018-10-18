@@ -79,7 +79,6 @@ deploy:
   file: "${ASSETFILE}"
   skip_cleanup: true
   on:
-    os: linux                   # Deploy only on linux
     tags: false
 
 notifications:
