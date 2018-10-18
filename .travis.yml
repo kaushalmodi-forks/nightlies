@@ -62,8 +62,9 @@ install:
         ./koch csource -d:release;
         rm -rf csources;
       )"
-  - rm "${NIMDIR}/.travis.yml"
   - export PATH="${NIMDIR}/bin:${PATH}" # Need to set PATH in the case cached nim build is used
+  # Restore the .travis.yml deleted from cache
+  - git clone --single-branch --branch devel --depth=1 ${NIMREPO} temp && cp temp/.travis.yml ${NIMDIR}/.
 
 script:
   - echo '[In script block]'
@@ -75,6 +76,7 @@ before_deploy:
   - echo '[phase n-2] Running koch xz'
   # Create the release archive.
   - ./koch xz -d:release
+  - rm ./.travis.yml # so that Travis deploy is not confused by the Nim repo .travis.yml
   - echo '[phase n-1] The deploy will start now ..'
 
 deploy:
