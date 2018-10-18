@@ -48,20 +48,29 @@ install:
         cd ${NIMDIR};
         [ -d csources ] || git clone --depth 1 https://github.com/nim-lang/csources.git;
         cd csources;
+        echo 'herehere0';
         sh build.sh;
         cd ..;
+        echo 'herehere1';
         ./bin/nim c koch;
+        echo 'herehere2';
         ./koch boot -d:release;
+        export PATH=\"${NIMDIR}/bin:${PATH}\";
+        echo 'herehere3';
         ./koch doc0;
+        echo 'herehere4';
         ./koch csource -d:release;
         rm -rf csources;
       )"
+  - echo 'herehere5'
   - export PATH="${NIMDIR}/bin:${PATH}"
 
 script:
+  - echo 'herehere6'
   - nim --version
 
 before_deploy:
+  - echo 'herehere7'
   - cd "${NIMDIR}"
   # Create the release archive.
   - ./koch xz -d:release
