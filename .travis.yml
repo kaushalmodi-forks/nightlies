@@ -62,6 +62,7 @@ install:
         ./koch csource -d:release;
         rm -rf csources;
       )"
+  - rm "${NIMDIR}/.travis.yml"
   - export PATH="${NIMDIR}/bin:${PATH}" # Need to set PATH in the case cached nim build is used
 
 script:
