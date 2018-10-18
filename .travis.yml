@@ -17,7 +17,8 @@ cache:
 env:
   global:
     - NIMREPO="https://github.com/nim-lang/Nim"
-    - NIMVER="$(git ls-remote ${NIMREPO} devel | cut -f 1)"
+    # - NIMVER="$(git ls-remote ${NIMREPO} devel | cut -f 1)"
+    - NIMVER="eaca5be9d6e205e8aa7055306122a6c053ef35a6" # hard-code the version for now -- Thu Oct 18 17:23:34 EDT 2018 - kmodi
     - NIMDIR="${TRAVIS_BUILD_DIR}/nim/${NIMVER}"
 
 addons:
@@ -81,7 +82,7 @@ deploy:
   file_glob: true
   skip_cleanup: true
   on:
-    tags: false
+    tags: true
 
 notifications:
   email:
