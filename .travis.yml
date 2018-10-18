@@ -19,7 +19,6 @@ env:
     - NIMREPO="https://github.com/nim-lang/Nim"
     - NIMVER="$(git ls-remote ${NIMREPO} devel | cut -f 1)"
     - NIMDIR="${TRAVIS_BUILD_DIR}/nim/${NIMVER}"
-    - USE_CACHE=1
 
 addons:
   apt:
@@ -41,7 +40,7 @@ before_install:
 install:
   - echo "NIMDIR = ${NIMDIR}"
   # After building nim, wipe csources to save on cache space.
-  - "{ [ ${USE_CACHE} -eq 1 ] || [ -f ${NIMDIR}/bin/nim ]; } ||
+  - "{ [ -f ${NIMDIR}/bin/nim ]; } ||
       ( rm -rf nim;
         mkdir -p nim;
         git clone --single-branch --branch devel --depth=1 ${NIMREPO} ${NIMDIR};
@@ -60,23 +59,19 @@ install:
         ./koch doc0;
         echo '[phase 4] Running koch csource';
         ./koch csource -d:release;
+        echo '[phase 5] Running koch xz';
+        ./koch xz -d:release;
         rm -rf csources;
+        rm ./.travis.yml;
       )"
   - export PATH="${NIMDIR}/bin:${PATH}" # Need to set PATH in the case cached nim build is used
-  # Restore the .travis.yml deleted from cache
-  - git clone --single-branch --branch devel --depth=1 ${NIMREPO} temp && cp temp/.travis.yml ${NIMDIR}/.
 
 script:
   - echo '[In script block]'
   - nim --version
 
 before_deploy:
-  - echo '[In before_deploy block]'
   - cd "${NIMDIR}"
-  - echo '[phase n-2] Running koch xz'
-  # Create the release archive.
-  - ./koch xz -d:release
-  - rm ./.travis.yml # so that Travis deploy is not confused by the Nim repo .travis.yml
   - echo '[phase n-1] The deploy will start now ..'
 
 deploy:
