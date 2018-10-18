@@ -52,12 +52,12 @@ install:
         echo '[phase 2] Building nim';
         ./koch boot -d:release;
         export PATH=\"${NIMDIR}/bin:${PATH}\";
-        [ $TRAVIS_OS_NAME == \"osx\" ] || echo '[phase 3] Running koch doc0';
-        [ $TRAVIS_OS_NAME == \"osx\" ] || ./koch doc0;
-        [ $TRAVIS_OS_NAME == \"osx\" ] || echo '[phase 4] Running koch csource';
-        [ $TRAVIS_OS_NAME == \"osx\" ] || ./koch csource -d:release;
-        [ $TRAVIS_OS_NAME == \"osx\" ] || echo '[phase 5] Running koch xz';
-        [ $TRAVIS_OS_NAME == \"osx\" ] || ./koch xz -d:release;
+        echo '[phase 3] Running koch doc0';
+        ./koch doc0;
+        echo '[phase 4] Running koch csource';
+        ./koch csource -d:release;
+        echo '[phase 5] Running koch xz';
+        ./koch xz -d:release;
         rm -rf csources;
       )"
   - export PATH="${NIMDIR}/bin:${PATH}" # Need to set PATH in the case cached nim build is used
@@ -69,7 +69,7 @@ script:
 before_deploy:
   - cd "${TRAVIS_BUILD_DIR}"
   - export DEPLOY_VERSION="$(nim --version | head -n 1 | perl -pe 's/.*Version ([0-9.]+).*/\1/')"
-  - export ASSETFILE="nim-${DEPLOY_VERSION}.tar.xz"
+  - export ASSETFILE="nim-${DEPLOY_VERSION}-${TRAVIS_OS_NAME}.tar.xz"
   - cp -f "${NIMDIR}/build/${ASSETFILE}" "${ASSETFILE}"
   - echo '[phase n-1] The deploy will start now ..'
 
