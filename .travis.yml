@@ -72,14 +72,16 @@ script:
   - nim --version
 
 before_deploy:
-  - cd "${NIMDIR}"
+  - cd "${TRAVIS_BUILD_DIR}"
+  - export DEPLOY_VERSION="$(nim --version | grep -Po 'Version \K[0-9.]+')"
+  - export ASSETFILE="nim-${DEPLOY_VERSION}.tar.xz"
+  - cp -f "${NIMDIR}/build/${ASSETFILE}" "${ASSETFILE}"
   - echo '[phase n-1] The deploy will start now ..'
 
 deploy:
   provider: releases
   api_key: "${GITHUB_OAUTH_TOKEN}"
-  file: "nim/${NIMVER}/build/nim-*.tar.xz"
-  file_glob: true
+  file: "${ASSETFILE}"
   skip_cleanup: true
   on:
     tags: true
