@@ -20,6 +20,7 @@ env:
     - NIMREPO="https://github.com/nim-lang/Nim"
     - NIMVER="$(git ls-remote ${NIMREPO} devel | cut -f 1)"
     - NIMDIR="${TRAVIS_BUILD_DIR}/nim/${NIMVER}"
+    - USE_CACHE=1
 
 addons:
   apt:
@@ -41,39 +42,40 @@ before_install:
 install:
   - echo "NIMDIR = ${NIMDIR}"
   # After building nim, wipe csources to save on cache space.
-  - "{ [ -f ${NIMDIR}/bin/nim ]; } ||
+  - "{ [ ${USE_CACHE} -eq 1 ] || [ -f ${NIMDIR}/bin/nim ]; } ||
       ( rm -rf nim;
         mkdir -p nim;
         git clone --single-branch --branch devel --depth=1 ${NIMREPO} ${NIMDIR};
         cd ${NIMDIR};
         [ -d csources ] || git clone --depth 1 https://github.com/nim-lang/csources.git;
         cd csources;
-        echo 'herehere0';
+        echo '[phase 0] Building csources';
         sh build.sh;
         cd ..;
-        echo 'herehere1';
+        echo '[phase 1] Building koch';
         ./bin/nim c koch;
-        echo 'herehere2';
+        echo '[phase 2] Building nim';
         ./koch boot -d:release;
         export PATH=\"${NIMDIR}/bin:${PATH}\";
-        echo 'herehere3';
+        echo '[phase 3] Running koch doc0';
         ./koch doc0;
-        echo 'herehere4';
+        echo '[phase 4] Running koch csource';
         ./koch csource -d:release;
         rm -rf csources;
       )"
-  - echo 'herehere5'
-  - export PATH="${NIMDIR}/bin:${PATH}"
+  - export PATH="${NIMDIR}/bin:${PATH}" # Need to set PATH in the case cached nim build is used
 
 script:
-  - echo 'herehere6'
+  - echo '[In script block]'
   - nim --version
 
 before_deploy:
-  - echo 'herehere7'
+  - echo '[In before_deploy block]'
   - cd "${NIMDIR}"
+  - echo '[phase n-2] Running koch xz'
   # Create the release archive.
   - ./koch xz -d:release
+  - echo '[phase n-1] The deploy will start now ..'
 deploy:
   provider: releases
   api_key: "${GITHUB_OAUTH_TOKEN}"
