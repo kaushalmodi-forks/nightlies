@@ -61,8 +61,6 @@ install:
         ./koch csource -d:release;
         echo '[phase 5] Running koch xz';
         ./koch xz -d:release;
-        echo '[phase 6] Running koch testinstall';
-        ./koch testinstall;
         rm -rf csources;
       )"
   - export PATH="${NIMDIR}/bin:${PATH}" # Need to set PATH in the case cached nim build is used
