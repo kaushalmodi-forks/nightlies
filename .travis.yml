@@ -16,7 +16,7 @@ env:
     - NIMVER="$(git ls-remote ${NIMREPO} devel | cut -f 1)"
     - NIMDIR="${TRAVIS_BUILD_DIR}/nim/${NIMVER}"
     - DATESTR="$(date +'%Y-%m-%d')"
-    - DO_DEPLOY=no
+    - NEW_NIM_COMMIT=no
 
 addons:
   apt:
@@ -41,6 +41,7 @@ install:
   - "{ [ -f ${NIMDIR}/bin/nim ]; } ||
       ( rm -rf nim;
         mkdir -p nim;
+        export NEW_NIM_COMMIT=yes;
         git clone --single-branch --branch devel --depth=1 ${NIMREPO} ${NIMDIR};
         cd ${NIMDIR};
         export NIMVERSHORT=$(git log --format=%h -1);
@@ -63,7 +64,6 @@ install:
         echo '[phase 6] Running koch testinstall';
         ./koch testinstall;
         rm -rf csources;
-        export DO_DEPLOY=yes;
       )"
   - export PATH="${NIMDIR}/bin:${PATH}" # Need to set PATH in the case cached nim build is used
 
@@ -93,7 +93,7 @@ deploy:
   body: "This nightly release is built using https://github.com/nim-lang/Nim/tree/${NIMVER}"
   skip_cleanup: true
   on:
-    condition: $DO_DEPLOY = yes
+    condition: $NEW_NIM_COMMIT = yes
     tags: true
 
 notifications:
