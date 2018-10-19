@@ -35,11 +35,11 @@ before_install:
 
 install:
   - echo "NIMDIR = ${NIMDIR}"
+  - if [[ ! -f "${NIMDIR}/bin/nim" ]]; then export NEW_NIM_COMMIT=yes; fi
   # After building nim, wipe csources to save on cache space.
   - "{ [ -f ${NIMDIR}/bin/nim ]; } ||
       ( rm -rf nim;
         mkdir -p nim;
-        export NEW_NIM_COMMIT=yes;
         git clone --single-branch --branch devel --depth=1 ${NIMREPO} ${NIMDIR};
         cd ${NIMDIR};
         [ -d csources ] || git clone --depth 1 https://github.com/nim-lang/csources.git;
