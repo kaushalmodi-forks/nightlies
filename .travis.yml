@@ -15,7 +15,6 @@ env:
     - NIMREPO="https://github.com/nim-lang/Nim"
     - NIMVER="$(git ls-remote ${NIMREPO} devel | cut -f 1)"
     - NIMDIR="${TRAVIS_BUILD_DIR}/nim/${NIMVER}"
-    - NEW_NIM_COMMIT=no
 
 addons:
   apt:
@@ -61,7 +60,7 @@ install:
         ./koch xz -d:release;
         rm -rf csources;
       )"
-  - echo "NIM_NEW_COMMIT = ${NIM_NEW_COMMIT}"
+  - if [[ ! -z "${NIM_NEW_COMMIT}" ]]; then echo "[cache check] New Nim commit found"; else echo "[cache check] No new Nim commit"; fi
   # Ensure that NIMVERSHORT and PATH env vars are set whether or not
   # cached nim build is used.
   - cd "${NIMDIR}" && export NIMVERSHORT="$(git log --format=%h -1)"
@@ -89,7 +88,7 @@ deploy:
     But either file can be used to build Nim on Linux, OSX and even Windows.
   skip_cleanup: true
   on:
-    condition: "${NEW_NIM_COMMIT} == yes"
+    condition: "! -z ${NIM_NEW_COMMIT}"
     tags: false
 
 notifications:
