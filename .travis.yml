@@ -15,7 +15,6 @@ env:
     - NIMREPO="https://github.com/nim-lang/Nim"
     - NIMVER="$(git ls-remote ${NIMREPO} devel | cut -f 1)"
     - NIMDIR="${TRAVIS_BUILD_DIR}/nim/${NIMVER}"
-    - DATESTR="$(date +'%Y-%m-%d')"
     - NEW_NIM_COMMIT=no
 
 addons:
@@ -76,22 +75,13 @@ before_deploy:
   - export DEPLOY_VERSION="$(nim --version | head -n 1 | perl -pe 's/.*Version ([0-9.]+).*/\1/')"
   - export ASSETFILE="nim-${DEPLOY_VERSION}-${TRAVIS_OS_NAME}.tar.xz"
   - cp -f "${NIMDIR}/build/nim-${DEPLOY_VERSION}.tar.xz" "${ASSETFILE}"
-  # Set up git user name and tag this commit
-  # https://docs.travis-ci.com/user/deployment/releases/
-  # Set the GIT_TAG_USER_NAME and GIT_TAG_USER_EMAIL env var variables
-  # in Travis CI setup for this repo.
-  - git config --local user.name "${GIT_TAG_USER_NAME}"
-  - git config --local user.email "${GIT_TAG_USER_EMAIL}"
-  - export GIT_TAG="nim-${NIMVERSHORT}-${DATESTR}-$(git log --format=%h -1)"
-  # 'git tag' only if a tag named ${GIT_TAG} doesn't already exist.
-  - if ! git tag -l "${GIT_TAG}"; then git tag "${GIT_TAG}"; fi
   - echo '[phase n-1] The deploy will start now ..'
 
 deploy:
   provider: releases
   api_key: "${GITHUB_OAUTH_TOKEN}"
   file: "${ASSETFILE}"
-  name: "Nightly build ${DATESTR} ${NIMVERSHORT}"
+  name: "Nightly build $(date +'%Y-%m-%d') ${NIMVERSHORT}"
   body: >-
     This nightly release is built using https://github.com/nim-lang/Nim/tree/${NIMVER}.
     The -linux.tar.xz release archive is built and tested on linux, and likewise for the -osx.tar.xz archive.
