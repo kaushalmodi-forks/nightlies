@@ -14,8 +14,9 @@ env:
   global:
     - NIMREPO="https://github.com/nim-lang/Nim"
     - NIMVER="$(git ls-remote ${NIMREPO} devel | cut -f 1)"
-    # - NIMVER="eaca5be9d6e205e8aa7055306122a6c053ef35a6" # hard-code the version for now -- Thu Oct 18 17:23:34 EDT 2018 - kmodi
     - NIMDIR="${TRAVIS_BUILD_DIR}/nim/${NIMVER}"
+    - DATESTR="$(date +'%Y-%m-%d')"
+    - DO_DEPLOY=no
 
 addons:
   apt:
@@ -42,6 +43,7 @@ install:
         mkdir -p nim;
         git clone --single-branch --branch devel --depth=1 ${NIMREPO} ${NIMDIR};
         cd ${NIMDIR};
+        export NIMVERSHORT=$(git log --format=%h -1);
         [ -d csources ] || git clone --depth 1 https://github.com/nim-lang/csources.git;
         cd csources;
         echo '[phase 0] Building csources';
@@ -58,7 +60,10 @@ install:
         ./koch csource -d:release;
         echo '[phase 5] Running koch xz';
         ./koch xz -d:release;
+        echo '[phase 6] Running koch testinstall';
+        ./koch testinstall;
         rm -rf csources;
+        export DO_DEPLOY=yes;
       )"
   - export PATH="${NIMDIR}/bin:${PATH}" # Need to set PATH in the case cached nim build is used
 
@@ -71,15 +76,24 @@ before_deploy:
   - export DEPLOY_VERSION="$(nim --version | head -n 1 | perl -pe 's/.*Version ([0-9.]+).*/\1/')"
   - export ASSETFILE="nim-${DEPLOY_VERSION}-${TRAVIS_OS_NAME}.tar.xz"
   - cp -f "${NIMDIR}/build/nim-${DEPLOY_VERSION}.tar.xz" "${ASSETFILE}"
+  # Set up git user name and tag this commit
+  # https://docs.travis-ci.com/user/deployment/releases/
+  # Set the GIT_TAG_USER_NAME and GIT_TAG_USER_EMAIL env var variables
+  # in Travis CI setup for this repo.
+  - git config --local user.name "${GIT_TAG_USER_NAME}"
+  - git config --local user.email "${GIT_TAG_USER_EMAIL}"
+  - git tag "nb-${DATESTR}-${NIMVERSHORT}" # nb - nightly build
   - echo '[phase n-1] The deploy will start now ..'
 
 deploy:
   provider: releases
   api_key: "${GITHUB_OAUTH_TOKEN}"
   file: "${ASSETFILE}"
-  name: Nightly build $(date +'%Y%m%d')
+  name: "Nightly build ${DATESTR} ${NIMVERSHORT}"
+  body: "This nightly release is built using https://github.com/nim-lang/Nim/tree/${NIMVER}"
   skip_cleanup: true
   on:
+    condition: $DO_DEPLOY = yes
     tags: false
 
 notifications:
