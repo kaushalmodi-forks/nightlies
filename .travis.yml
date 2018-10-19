@@ -90,11 +90,10 @@ deploy:
   api_key: "${GITHUB_OAUTH_TOKEN}"
   file: "${ASSETFILE}"
   name: "Nightly build ${DATESTR} ${NIMVERSHORT}"
-  body:
-    - |
-      This nightly release is built using https://github.com/nim-lang/Nim/tree/${NIMVER}.
-      The -linux.tar.xz release archive is built and tested on linux, and likewise for the -osx.tar.xz archive.
-      But either file can be used to build Nim on Linux, OSX and even Windows.
+  body: >-
+    This nightly release is built using https://github.com/nim-lang/Nim/tree/${NIMVER}.
+    The -linux.tar.xz release archive is built and tested on linux, and likewise for the -osx.tar.xz archive.
+    But either file can be used to build Nim on Linux, OSX and even Windows.
   skip_cleanup: true
   on:
     #condition: $NEW_NIM_COMMIT = yes
