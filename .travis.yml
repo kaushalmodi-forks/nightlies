@@ -82,9 +82,9 @@ before_deploy:
   # in Travis CI setup for this repo.
   - git config --local user.name "${GIT_TAG_USER_NAME}"
   - git config --local user.email "${GIT_TAG_USER_EMAIL}"
-  - export GIT_TAG="nb-${DATESTR}-${NIMVERSHORT}" # nb - nightly build
-  - current_tags="$(git tag -l --points-at HEAD)"
-  - if [[ "${GIT_TAG}" != *"${current_tags}"* ]]; then git tag "${GIT_TAG}"; fi
+  - export GIT_TAG="nim-${NIMVERSHORT}-${DATESTR}-$(git log --format=%h -1)"
+  # 'git tag' only if a tag named ${GIT_TAG} doesn't already exist.
+  - if ! git tag -l "${GIT_TAG}"; then git tag "${GIT_TAG}"; fi
   - echo '[phase n-1] The deploy will start now ..'
 
 deploy:
