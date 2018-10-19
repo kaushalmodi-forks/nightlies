@@ -96,7 +96,7 @@ deploy:
   skip_cleanup: true
   on:
     condition: $NEW_NIM_COMMIT = yes
-    tags: true
+    tags: false
 
 notifications:
   email:
