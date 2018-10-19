@@ -95,7 +95,7 @@ deploy:
       But either file can be used to build Nim on Linux, OSX and even Windows.
   skip_cleanup: true
   on:
-    condition: $NEW_NIM_COMMIT = yes
+    #condition: $NEW_NIM_COMMIT = yes
     tags: false
 
 notifications:
