@@ -94,7 +94,7 @@ deploy:
   skip_cleanup: true
   on:
     condition: $DO_DEPLOY = yes
-    tags: false
+    tags: true
 
 notifications:
   email:
