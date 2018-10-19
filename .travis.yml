@@ -44,7 +44,6 @@ install:
         export NEW_NIM_COMMIT=yes;
         git clone --single-branch --branch devel --depth=1 ${NIMREPO} ${NIMDIR};
         cd ${NIMDIR};
-        export NIMVERSHORT=$(git log --format=%h -1);
         [ -d csources ] || git clone --depth 1 https://github.com/nim-lang/csources.git;
         cd csources;
         echo '[phase 0] Building csources';
@@ -63,7 +62,10 @@ install:
         ./koch xz -d:release;
         rm -rf csources;
       )"
-  - export PATH="${NIMDIR}/bin:${PATH}" # Need to set PATH in the case cached nim build is used
+  # Ensure that NIMVERSHORT and PATH env vars are set whether or not
+  # cached nim build is used.
+  - cd "${NIMDIR}" && export NIMVERSHORT="$(git log --format=%h -1)"
+  - export PATH="${NIMDIR}/bin:${PATH}"
 
 script:
   - echo '[In script block]'
