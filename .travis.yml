@@ -61,6 +61,7 @@ install:
         ./koch xz -d:release;
         rm -rf csources;
       )"
+  - echo "NIM_NEW_COMMIT = ${NIM_NEW_COMMIT}"
   # Ensure that NIMVERSHORT and PATH env vars are set whether or not
   # cached nim build is used.
   - cd "${NIMDIR}" && export NIMVERSHORT="$(git log --format=%h -1)"
@@ -88,7 +89,7 @@ deploy:
     But either file can be used to build Nim on Linux, OSX and even Windows.
   skip_cleanup: true
   on:
-    condition: $NEW_NIM_COMMIT = yes
+    condition: "${NEW_NIM_COMMIT} == yes"
     tags: false
 
 notifications:
