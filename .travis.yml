@@ -35,9 +35,9 @@ env:
 
 install:
   - echo "NIMDIR = ${NIMDIR}"
-  - if [[ ! -f "${NIMDIR}/bin/nim" ]]; then export NEW_NIM_COMMIT=yes && echo "no nim"; fi
+  - if [[ ! -f "${NIMDIR}/bin/nim" ]]; then export DO_DEPLOY=yes && echo "no nim"; fi
   - if [[ -f "${NIMDIR}/bin/nim" ]]; then echo "yes nim"; fi
-  - if [[ ! -f "${NIMDIR}/bin/vim" ]]; then export NEW_NIM_COMMIT=yes && echo "no vim"; fi
+  - if [[ ! -f "${NIMDIR}/bin/vim" ]]; then export NEW_VIM_COMMIT=yes && echo "no vim"; fi
   - if [[ -f "${NIMDIR}/bin/vim" ]]; then echo "yes vim"; fi
   # # After building nim, wipe csources to save on cache space.
   # - "{ [ -f ${NIMDIR}/bin/nim ]; } ||
@@ -63,7 +63,8 @@ install:
   #       ./koch xz -d:release;
   #       rm -rf csources;
   #     )"
-  - if [[ ! -z "${NIM_NEW_COMMIT}" ]]; then echo "[cache check] ${NIM_NEW_COMMIT} New Nim commit found"; else echo "[cache check] No new Nim commit"; fi
+  - if [ ! -z "${DO_DEPLOY+x}" ]; then echo "[cache check] ${DO_DEPLOY} New Nim commit found"; else echo "[cache check] No new Nim commit"; fi
+  - if [ ! -z "${NEW_VIM_COMMIT+x}" ]; then echo "[cache check] ${NEW_VIM_COMMIT} New Nim commit found"; else echo "[cache check] No new Nim commit"; fi
   # # Ensure that NIMVERSHORT and PATH env vars are set whether or not
   # # cached nim build is used.
   # - cd "${NIMDIR}" && export NIMVERSHORT="$(git log --format=%h -1)"
@@ -91,7 +92,7 @@ script:
 #     But either file can be used to build Nim on Linux, OSX and even Windows.
 #   skip_cleanup: true
 #   on:
-#     condition: "! -z ${NIM_NEW_COMMIT}"
+#     condition: "! -z ${NEW_VIM_COMMIT}"
 #     tags: false
 
 notifications:
