@@ -35,61 +35,62 @@ before_install:
 
 install:
   - echo "NIMDIR = ${NIMDIR}"
-  - if [[ ! -f "${NIMDIR}/bin/nim" ]]; then export NEW_NIM_COMMIT=yes; fi
-  # After building nim, wipe csources to save on cache space.
-  - "{ [ -f ${NIMDIR}/bin/nim ]; } ||
-      ( rm -rf nim;
-        mkdir -p nim;
-        git clone --single-branch --branch devel --depth=1 ${NIMREPO} ${NIMDIR};
-        cd ${NIMDIR};
-        [ -d csources ] || git clone --depth 1 https://github.com/nim-lang/csources.git;
-        cd csources;
-        echo '[phase 0] Building csources';
-        sh build.sh;
-        cd ..;
-        echo '[phase 1] Building koch';
-        ./bin/nim c koch;
-        echo '[phase 2] Building nim';
-        ./koch boot -d:release;
-        export PATH=\"${NIMDIR}/bin:${PATH}\";
-        echo '[phase 3] Running koch doc0';
-        ./koch doc0;
-        echo '[phase 4] Running koch csource';
-        ./koch csource -d:release;
-        echo '[phase 5] Running koch xz';
-        ./koch xz -d:release;
-        rm -rf csources;
-      )"
-  - if [[ ! -z "${NIM_NEW_COMMIT}" ]]; then echo "[cache check] New Nim commit found"; else echo "[cache check] No new Nim commit"; fi
-  # Ensure that NIMVERSHORT and PATH env vars are set whether or not
-  # cached nim build is used.
-  - cd "${NIMDIR}" && export NIMVERSHORT="$(git log --format=%h -1)"
-  - export PATH="${NIMDIR}/bin:${PATH}"
+  - if [[ ! -f "${NIMDIR}/bin/nim" ]]; then export NEW_NIM_COMMIT=yes && echo "no"; fi
+  - if [[ -f "${NIMDIR}/bin/nim" ]]; then echo "yes"; fi
+  # # After building nim, wipe csources to save on cache space.
+  # - "{ [ -f ${NIMDIR}/bin/nim ]; } ||
+  #     ( rm -rf nim;
+  #       mkdir -p nim;
+  #       git clone --single-branch --branch devel --depth=1 ${NIMREPO} ${NIMDIR};
+  #       cd ${NIMDIR};
+  #       [ -d csources ] || git clone --depth 1 https://github.com/nim-lang/csources.git;
+  #       cd csources;
+  #       echo '[phase 0] Building csources';
+  #       sh build.sh;
+  #       cd ..;
+  #       echo '[phase 1] Building koch';
+  #       ./bin/nim c koch;
+  #       echo '[phase 2] Building nim';
+  #       ./koch boot -d:release;
+  #       export PATH=\"${NIMDIR}/bin:${PATH}\";
+  #       echo '[phase 3] Running koch doc0';
+  #       ./koch doc0;
+  #       echo '[phase 4] Running koch csource';
+  #       ./koch csource -d:release;
+  #       echo '[phase 5] Running koch xz';
+  #       ./koch xz -d:release;
+  #       rm -rf csources;
+  #     )"
+  - if [[ ! -z "${NIM_NEW_COMMIT}" ]]; then echo "[cache check] `${NIM_NEW_COMMIT}' New Nim commit found"; else echo "[cache check] No new Nim commit"; fi
+  # # Ensure that NIMVERSHORT and PATH env vars are set whether or not
+  # # cached nim build is used.
+  # - cd "${NIMDIR}" && export NIMVERSHORT="$(git log --format=%h -1)"
+  # - export PATH="${NIMDIR}/bin:${PATH}"
 
 script:
   - echo '[In script block]'
-  - nim --version
+  # - nim --version
 
-before_deploy:
-  - cd "${TRAVIS_BUILD_DIR}"
-  - export DEPLOY_VERSION="$(nim --version | head -n 1 | perl -pe 's/.*Version ([0-9.]+).*/\1/')"
-  - export ASSETFILE="nim-${DEPLOY_VERSION}-${NIMVERSHORT}-${TRAVIS_OS_NAME}.tar.xz"
-  - cp -f "${NIMDIR}/build/nim-${DEPLOY_VERSION}.tar.xz" "${ASSETFILE}"
-  - echo '[phase n-1] The deploy will start now ..'
+# before_deploy:
+#   - cd "${TRAVIS_BUILD_DIR}"
+#   - export DEPLOY_VERSION="$(nim --version | head -n 1 | perl -pe 's/.*Version ([0-9.]+).*/\1/')"
+#   - export ASSETFILE="nim-${DEPLOY_VERSION}-${NIMVERSHORT}-${TRAVIS_OS_NAME}.tar.xz"
+#   - cp -f "${NIMDIR}/build/nim-${DEPLOY_VERSION}.tar.xz" "${ASSETFILE}"
+#   - echo '[phase n-1] The deploy will start now ..'
 
-deploy:
-  provider: releases
-  api_key: "${GITHUB_OAUTH_TOKEN}"
-  file: "${ASSETFILE}"
-  name: "Nightly build $(date +'%Y-%m-%d') ${NIMVERSHORT}"
-  body: >-
-    This nightly release is built using https://github.com/nim-lang/Nim/tree/${NIMVER}.
-    The *-linux.tar.xz release archive is built on linux, and likewise for the *-osx.tar.xz archive.
-    But either file can be used to build Nim on Linux, OSX and even Windows.
-  skip_cleanup: true
-  on:
-    condition: "! -z ${NIM_NEW_COMMIT}"
-    tags: false
+# deploy:
+#   provider: releases
+#   api_key: "${GITHUB_OAUTH_TOKEN}"
+#   file: "${ASSETFILE}"
+#   name: "Nightly build $(date +'%Y-%m-%d') ${NIMVERSHORT}"
+#   body: >-
+#     This nightly release is built using https://github.com/nim-lang/Nim/tree/${NIMVER}.
+#     The *-linux.tar.xz release archive is built on linux, and likewise for the *-osx.tar.xz archive.
+#     But either file can be used to build Nim on Linux, OSX and even Windows.
+#   skip_cleanup: true
+#   on:
+#     condition: "! -z ${NIM_NEW_COMMIT}"
+#     tags: false
 
 notifications:
   email:
