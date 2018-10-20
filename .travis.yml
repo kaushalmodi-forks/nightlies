@@ -4,7 +4,7 @@ language: c
 
 os:
   - linux
-  - osx
+  # - osx
 
 cache:
   directories:
@@ -16,27 +16,29 @@ env:
     - NIMVER="$(git ls-remote ${NIMREPO} devel | cut -f 1)"
     - NIMDIR="${TRAVIS_BUILD_DIR}/nim/${NIMVER}"
 
-addons:
-  apt:
-    packages:
-    - libcurl4-openssl-dev
-    - libsdl1.2-dev
-    - libgc-dev
-    - libsfml-dev
+# addons:
+#   apt:
+#     packages:
+#     - libcurl4-openssl-dev
+#     - libsdl1.2-dev
+#     - libgc-dev
+#     - libsfml-dev
 
-before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install boehmgc; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install sfml; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install gnu-tar; fi
-  - set -e
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then unset -f cd; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then shell_session_update() { :; }; fi
+# before_install:
+#   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
+#   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install boehmgc; fi
+#   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install sfml; fi
+#   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install gnu-tar; fi
+#   - set -e
+#   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then unset -f cd; fi
+#   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then shell_session_update() { :; }; fi
 
 install:
   - echo "NIMDIR = ${NIMDIR}"
-  - if [[ ! -f "${NIMDIR}/bin/nim" ]]; then export NEW_NIM_COMMIT=yes && echo "no"; fi
-  - if [[ -f "${NIMDIR}/bin/nim" ]]; then echo "yes"; fi
+  - if [[ ! -f "${NIMDIR}/bin/nim" ]]; then export NEW_NIM_COMMIT=yes && echo "no nim"; fi
+  - if [[ -f "${NIMDIR}/bin/nim" ]]; then echo "yes nim"; fi
+  - if [[ ! -f "${NIMDIR}/bin/vim" ]]; then export NEW_NIM_COMMIT=yes && echo "no vim"; fi
+  - if [[ -f "${NIMDIR}/bin/vim" ]]; then echo "yes vim"; fi
   # # After building nim, wipe csources to save on cache space.
   # - "{ [ -f ${NIMDIR}/bin/nim ]; } ||
   #     ( rm -rf nim;
@@ -61,7 +63,7 @@ install:
   #       ./koch xz -d:release;
   #       rm -rf csources;
   #     )"
-  - if [[ ! -z "${NIM_NEW_COMMIT}" ]]; then echo "[cache check] `${NIM_NEW_COMMIT}' New Nim commit found"; else echo "[cache check] No new Nim commit"; fi
+  - if [[ ! -z "${NIM_NEW_COMMIT}" ]]; then echo "[cache check] ${NIM_NEW_COMMIT} New Nim commit found"; else echo "[cache check] No new Nim commit"; fi
   # # Ensure that NIMVERSHORT and PATH env vars are set whether or not
   # # cached nim build is used.
   # - cd "${NIMDIR}" && export NIMVERSHORT="$(git log --format=%h -1)"
