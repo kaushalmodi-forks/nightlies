@@ -9,20 +9,20 @@ matrix:
     - os: linux
       env: NIMBRANCH=devel
 
-    - os: osx
-      env: NIMBRANCH=devel
+    # - os: osx
+    #   env: NIMBRANCH=devel
 
-    - os: windows
-      env: NIMBRANCH=devel
+    # - os: windows
+    #   env: NIMBRANCH=devel
 
-    - os: linux
-      env: NIMBRANCH=version-0-19
+    # - os: linux
+    #   env: NIMBRANCH=version-0-19
 
-    - os: osx
-      env: NIMBRANCH=version-0-19
+    # - os: osx
+    #   env: NIMBRANCH=version-0-19
 
-    - os: windows
-      env: NIMBRANCH=version-0-19
+    # - os: windows
+    #   env: NIMBRANCH=version-0-19
 
 env:
   global:
