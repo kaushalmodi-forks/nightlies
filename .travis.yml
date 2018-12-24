@@ -30,11 +30,11 @@ env:
     - NIMVER="$(git ls-remote ${NIMREPO} ${NIMBRANCH} | cut -f 1)"
     - NIMDIR="${TRAVIS_BUILD_DIR}/nim/${NIMVER}"
 
-branches:
-  only:
-    # Prevent building the auto tagged "untagged-*" commits.
-    # https://docs.travis-ci.com/user/customizing-the-build/#safelisting-or-blocklisting-branches
-    - master
+# branches:
+#   only:
+#     # Prevent building the auto tagged "untagged-*" commits.
+#     # https://docs.travis-ci.com/user/customizing-the-build/#safelisting-or-blocklisting-branches
+#     - master
 
 addons:
   apt:
