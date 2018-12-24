@@ -57,8 +57,8 @@ before_install:
   - |
     if [[ "$TRAVIS_OS_NAME" == "osx" ]]
     then
-      unset -f cd;
-      shell_session_update() { :; };
+      unset -f cd
+      shell_session_update() { :; }
     fi
 
 install:
@@ -138,7 +138,7 @@ deploy:
   api_key: "${GITHUB_OAUTH_TOKEN}"
   file: "${ASSETFILE}"
   name: "Nightly build $(date +'%Y-%m-%d') ${NIMVERSHORT}"
-  body: >
+  body: >-
     This nightly release is built using https://github.com/nim-lang/Nim/tree/${NIMVER}.
     The *-linux.tar.xz release archive is built on linux, and likewise for the *-osx.tar.xz archive.
     But either file can be used to build Nim on Linux, OSX and even Windows.
