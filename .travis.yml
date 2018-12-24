@@ -46,7 +46,8 @@ addons:
 
 before_install:
   - |
-    if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+    if [[ "$TRAVIS_OS_NAME" == "osx" ]]
+    then
       brew update
       brew install boehmgc
       brew install sfml
@@ -54,7 +55,8 @@ before_install:
     fi
   - set -e
   - |
-    if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+    if [[ "$TRAVIS_OS_NAME" == "osx" ]]
+    then
       unset -f cd;
       shell_session_update() { :; };
     fi
@@ -62,7 +64,8 @@ before_install:
 install:
   - echo "NIMDIR = ${NIMDIR}"
   - |
-    if [[ ! -f "${NIMDIR}/bin/nim" ]]; then
+    if [[ ! -f "${NIMDIR}/bin/nim" ]]
+    then
       export DO_DEPLOY=yes && echo "DO_DEPLOY = ${DO_DEPLOY}"
       rm -rf nim
       mkdir -p nim
@@ -71,7 +74,8 @@ install:
       [ -d csources ] || git clone --depth 1 https://github.com/nim-lang/csources.git
       cd csources || exit
       echo "[phase 0] Building csources"
-      if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
+      if [[ "$TRAVIS_OS_NAME" == "windows" ]]
+      then
         cmd "/C build64.bat"
       else
         sh build.sh
@@ -86,7 +90,8 @@ install:
       ./koch doc0
       echo "[phase 4] Running koch csource"
       ./koch csource -d:release
-      if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
+      if [[ "$TRAVIS_OS_NAME" == "windows" ]]
+      then
         echo "[phase 5] Running tools/winrelease"
         ./bin/nim c tools/winrelease
         ./tools/winrelease
@@ -102,7 +107,8 @@ install:
   - cd "${NIMDIR}" && export NIMVERSHORT="$(git log --format=%h -1)"
   - export PATH="${NIMDIR}/bin:${PATH}"
   - |
-    if [[ ! -z "${DO_DEPLOY+x}" ]]; then
+    if [[ ! -z "${DO_DEPLOY+x}" ]]
+    then
       echo "[cache check] New Nim commit found"
     else
       echo "[cache check] No new Nim commit"
@@ -116,7 +122,8 @@ before_deploy:
   - cd "${TRAVIS_BUILD_DIR}"
   - export DEPLOY_VERSION="$(nim --version | head -n 1 | perl -pe 's/.*Version ([0-9.]+).*/\1/')"
   - |
-    if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then
+    if [[ "$TRAVIS_OS_NAME" == "windows" ]]
+    then
       export ZIPSUFFIX="_x64.zip"
     else
       export ZIPSUFFIX=".tar.xz"
