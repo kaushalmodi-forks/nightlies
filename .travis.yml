@@ -4,29 +4,35 @@ cache:
   directories:
     - nim
 
-matrix:
-  include:
-    - os: linux
-      env: NIMBRANCH=devel
+os:
+  - linux
+  - osx
+  - windows
 
-    # - os: osx
-    #   env: NIMBRANCH=devel
+# matrix:
+#   include:
+#     - os: linux
+#       env: NIMBRANCH=devel
 
-    # - os: windows
-    #   env: NIMBRANCH=devel
+#     # - os: osx
+#     #   env: NIMBRANCH=devel
 
-    # - os: linux
-    #   env: NIMBRANCH=version-0-19
+#     # - os: windows
+#     #   env: NIMBRANCH=devel
 
-    # - os: osx
-    #   env: NIMBRANCH=version-0-19
+#     # - os: linux
+#     #   env: NIMBRANCH=version-0-19
 
-    # - os: windows
-    #   env: NIMBRANCH=version-0-19
+#     # - os: osx
+#     #   env: NIMBRANCH=version-0-19
+
+#     # - os: windows
+#     #   env: NIMBRANCH=version-0-19
 
 env:
   global:
     - NIMREPO="https://github.com/nim-lang/Nim"
+    - NIMBRANCH="devel"
     - NIMVER="$(git ls-remote ${NIMREPO} ${NIMBRANCH} | cut -f 1)"
     - NIMDIR="${TRAVIS_BUILD_DIR}/nim/${NIMVER}"
 
