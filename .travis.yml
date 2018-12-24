@@ -46,11 +46,11 @@ env:
   global:
     - NIMREPO="https://github.com/nim-lang/Nim"
 
-branches:
-  only:
-    # Prevent building the auto tagged "untagged-*" commits.
-    # https://docs.travis-ci.com/user/customizing-the-build/#safelisting-or-blocklisting-branches
-    - master
+# branches:
+#   only:
+#     # Prevent building the auto tagged "untagged-*" commits.
+#     # https://docs.travis-ci.com/user/customizing-the-build/#safelisting-or-blocklisting-branches
+#     - master
 
 addons:
   apt:
