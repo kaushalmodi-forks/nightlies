@@ -121,8 +121,6 @@ install:
         mkdir -p web/upload/download
         cp tools/winrelease.exe .
         ./winrelease
-        echo "[phase 4] Running koch testinstall"
-        ./koch testinstall
       else
         echo "[phase 3] Running koch doc0"
         ./koch doc0
