@@ -58,6 +58,7 @@ before_install:
       brew install boehmgc
       brew install sfml
       brew install gnu-tar
+      brew install node
     fi
   - set -e
   - |
