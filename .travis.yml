@@ -1,4 +1,3 @@
-dist: xenial
 language: c
 
 os:
@@ -37,6 +36,7 @@ addons:
       - libsdl1.2-dev
       - libgc-dev
       - libsfml-dev
+      - nodejs
 
 before_cache:
   - |
